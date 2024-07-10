@@ -15,7 +15,7 @@ MAX_STEPS = 500
 # 线性变化，初始以及
 EPISODES_START = 3
 # 前面50%的都是在探索，后面以0.02的探索率进行探索
-EPISODES_END = 0.2
+EPISODES_END = 0.02
 EPISODES_DECAY = 70000
 
 

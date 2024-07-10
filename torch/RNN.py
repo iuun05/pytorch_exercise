@@ -20,3 +20,4 @@ for index, input in enumerate(dataset):
 
     print('output size: ', hidden.shape)
     print(hidden)
+    

@@ -8,12 +8,12 @@ print(observion)
 cnt = 0
 for _ in range(1000):
     env.render()  # 显示图形界面
-    action = env.action_space.sample() # 从动作空间中随机选取一个动作
+    action = env.action_space.sample() # 从动作空间中随机选取一个动作，实际不用
     observation, reward, done, info, _ = env.step(env.action_space.sample())
     if done:
         print('game reset %d'%cnt)
         cnt = cnt + 1
-        env.reset()
+        # env.reset()
     print(observation)
     # time.sleep(3)
     # env.reset()

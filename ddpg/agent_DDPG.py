@@ -8,8 +8,8 @@ from collections import deque
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
-actor_learing_rate = 0.8
-critic_learing_rate = 0.5
+actor_learing_rate = 0.08
+critic_learing_rate = 0.05
 GAMMA = 0.95
 MEMORY_SIZE = 1000000
 BATCH_SIZE = 128
