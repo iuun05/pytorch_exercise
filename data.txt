@@ -1,0 +1,137 @@
+# The input data is a complex nested dictionary structure. We'll define the structure and create a function to extract each key-value pair.
+
+data = {
+    "frameNo": 9548,
+    "hero_states": [
+        {
+            "player_id": 31,
+            "actor_state": {
+                "config_id": 508,
+                "runtime_id": 6,
+                "actor_type": "ACTOR_HERO",
+                "sub_type": "ACTOR_SUB_NONE",
+                "camp": "PLAYERCAMP_1",
+                "behav_mode": "Direction_Move",
+                "location": {"x": -8852, "y": 48, "z": -14842},
+                "forward": {"x": -357, "y": 0, "z": -934},
+                "hp": 3542,
+                "max_hp": 4341,
+                "values": {
+                    "phy_atk": 390,
+                    "phy_def": 196,
+                    "mgc_atk": 0,
+                    "mgc_def": 101,
+                    "mov_spd": 4795,
+                    "atk_spd": 6160,
+                    "ep": 162,
+                    "max_ep": 1132,
+                    "hp_recover": 51,
+                    "ep_recover": 29,
+                    "phy_armor_hurt": 64,
+                    "mgc_armor_hurt": 0,
+                    "crit_rate": 4740,
+                    "crit_effe": 14370,
+                    "phy_vamp": 640,
+                    "mgc_vamp": 0,
+                    "cd_reduce": 0,
+                    "ctrl_reduce": 0,
+                    "monster_endurance": 0,
+                    "organ_conti_attack": 0
+                },
+                "abilities": [False] * 46,
+                "attack_range": 8000,
+                "attack_target": 0,
+                "kill_income": 175,
+                "camp_visible": [True, False],
+                "sight_area": 7000,
+                "buff_state": {
+                    "buff_skills": [
+                        {"configId": 914250, "times": 0, "startTime": "53724"},
+                        {"configId": 911330, "times": 0, "startTime": "197472"},
+                        {"configId": 911332, "times": 0, "startTime": "197472"},
+                        {"configId": 508170, "times": 0, "startTime": "310134"},
+                        {"configId": 90019, "times": 0, "startTime": "311124"}
+                    ],
+                    "buff_marks": [
+                        {"origin_actorId": 50800, "configId": 0, "layer": 13}
+                    ]
+                },
+                "hurt_hero_info": [
+                    {"hurt_target": 13, "hurt": 4642}
+                ],
+                "skill_state": {
+                    "slot_states": [
+                        {
+                            "configId": 50800,
+                            "slot_type": "SLOT_SKILL_0",
+                            "level": 1,
+                            "usable": True,
+                            "cooldown": 0,
+                            "cooldown_max": 693,
+                            "usedTimes": 123,
+                            "hitHeroTimes": 11,
+                            "succUsedInFrame": 0,
+                            "nextConfigID": 0,
+                            "comboEffectTime": 0
+                        },
+                        # Additional skill slots would follow similar pattern
+                    ]
+                },
+                "equip_state": {
+                    "equips": [
+                        {"configId": 1425, "amount": 1, "buyPrice": 710},
+                        {"configId": 1133, "amount": 1, "buyPrice": 2140},
+                        # Additional equipment data can follow
+                    ]
+                },
+                "level": 7,
+                "exp": 652,
+                "money": 919,
+                "revive_time": 0,
+                "killCnt": 0,
+                "deadCnt": 0,
+                "assistCnt": 0,
+                "moneyCnt": 4979,
+                "totalHurt": 58629,
+                "totalHurtToHero": 4642,
+                "totalBeHurtByHero": 8443
+            }
+        },
+        # Second hero state (player 32) is omitted here for brevity
+    ],
+    "npc_states": [
+        {
+            "config_id": 6802,
+            "runtime_id": 849,
+            "actor_type": "ACTOR_MONSTER",
+            "sub_type": "ACTOR_SUB_SOLDIER",
+            "camp": "PLAYERCAMP_1",
+            "behav_mode": "Attack_Path",
+            "location": {"x": -25070, "y": 48, "z": -27081},
+            "forward": {"x": 754, "y": 0, "z": 657},
+            "hp": 3905,
+            "max_hp": 3905
+        },
+        # Additional NPC states omitted
+    ]
+}
+
+# Function to recursively print key-value pairs
+def read_dict(data, indent=0):
+    for key, value in data.items():
+        if isinstance(value, dict):
+            print(" " * indent + f"{key}:")
+            read_dict(value, indent + 2)
+        elif isinstance(value, list):
+            print(" " * indent + f"{key}: [")
+            for item in value:
+                if isinstance(item, dict):
+                    read_dict(item, indent + 2)
+                else:
+                    print(" " * (indent + 2) + str(item))
+            print(" " * indent + "]")
+        else:
+            print(" " * indent + f"{key}: {value}")
+
+# Run the function to print out the nested structure
+read_dict(data)

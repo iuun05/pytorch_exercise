@@ -1,5 +1,4 @@
 import random
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,14 +7,14 @@ from collections import deque
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
-actor_learing_rate = 0.08
-critic_learing_rate = 0.05
+actor_learing_rate = 8e-3
+critic_learing_rate = 5e-4
 GAMMA = 0.95
 MEMORY_SIZE = 1000000
 BATCH_SIZE = 128
 # 主要是要经验取决于现在的状态，而不是之前的经验
 # 之前的经验应该只占用一小部分权重
-TAU = 6E-1
+TAU = 6E-2
 
 # critic network -> actor network -> replay buffer -> ddpg algorithm
 
@@ -68,6 +67,15 @@ class ReplayMemory:
         # 先取出来解包，然后在打包为元组赋值
         state, action, reward, next_state, done = zip(*random.sample(self.buffer, batch_size))
         # 还原数据的格式，state，next_state就是一维三列
+        print(state)
+        print('-------------------------')
+        print(np.concatenate(state))
+        print('#########################')
+        print(action)
+        print('+++++++++++++++++++++++++++')
+        print(torch.cat([np.concatenate(state), action]))
+        print('[[[[[[[[[[[[[[[[[[[[[[[[[[')
+        print(torch.cat([state, action]))
         return np.concatenate(state), action, reward, np.concatenate(next_state), done
 
     # 保证mini_batch_size大于等于buffer的长度，才能进行sample
@@ -93,6 +101,7 @@ class DDPGAgent:
         # 升维度
         state = torch.FloatTensor(state).unsqueeze(0).to(device)
         action = self.actor(state)
+        # detach()：从当前计算图中分离出来，但是继续享有梯度
         return action.detach().cpu().numpy()[0]
 
     def update(self):
@@ -100,34 +109,30 @@ class DDPGAgent:
             return
 
         state, action, reward, next_state, done = self.replay_buffer.sample(BATCH_SIZE)
+
+        # 转化为tensor向量，保证可以用 pytorch 计算
         state = torch.FloatTensor(state).to(device)
         action = torch.FloatTensor(action).to(device)
-        # reward = torch.FloatTensor(reward).unsqueeze(1).to(device)
-        # done = torch.FloatTensor(np.float32(done)).unsqueeze(1).to(device)
         reward = torch.FloatTensor(reward).to(device)
         done = torch.FloatTensor(np.float32(done)).to(device)
         next_state = torch.FloatTensor(next_state).to(device)
 
         # update critic network
         next_action = self.actor_target(next_state)
-        # target_Q = self.critic_target(next_action, next_state.detach())
         target_Q = self.critic_target(next_state, next_action.detach())
         target_Q = reward + (1 - done) * GAMMA * target_Q
         current_Q = self.critic(state, action)
-        critic_loss = nn.MSELoss()(current_Q, target_Q.detach())
 
-        # 梯度更新
+
+        critic_loss = nn.MSELoss()(current_Q, target_Q.detach())
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
-        # 更新参数
         self.critic_optimizer.step()
 
         # update actor network
         action_loss = -self.critic(state, self.actor(state)).mean()
-        # 梯度更新
         self.actor_optimizer.zero_grad()
         action_loss.backward()
-        # 更新参数
         self.actor_optimizer.step()
 
         # update critic and actor target network

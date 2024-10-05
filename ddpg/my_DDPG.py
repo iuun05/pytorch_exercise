@@ -13,7 +13,7 @@ from agent_DDPG import DDPGAgent
 MAX_EPISODES = 250
 MAX_STEPS = 500
 # 线性变化，初始以及
-EPISODES_START = 3
+EPISODES_START = 0.85
 # 前面50%的都是在探索，后面以0.02的探索率进行探索
 EPISODES_END = 0.02
 EPISODES_DECAY = 70000
@@ -38,8 +38,10 @@ for episode_i in range(MAX_EPISODES):
     episode_reward = 0
 
     for step_i in range(MAX_STEPS):
+        # calculate the current episode
         episode = np.interp(x=episode_i*MAX_STEPS+step_i, xp=[0, EPISODES_DECAY], fp=[EPISODES_START, EPISODES_END])
         # take a random action
+        # 0.85的概率进行探索，0.02的概率进行探索
         random_sample = np.random.random()
         # 首先进行随机的探索
         if random_sample < episode:
@@ -49,6 +51,8 @@ for episode_i in range(MAX_EPISODES):
             # take an action based on the current state
             # 体现了Deterministic 的思想，即基于原来的基础上进行探索
             action = agent.get_action(state)
+        print('dim is ',ACTION_DIM)
+        print('action is %f:', action)
 
         next_state, reward, done, truncation, info = env.step(action)
 
@@ -68,23 +72,19 @@ for episode_i in range(MAX_EPISODES):
     REWARD_BUFFER[episode_i] = episode_reward
     print(f'Episode {episode_i+1}, Reward: {round(episode_reward, 2)}')
 
+# save the model
 current_path = os.path.dirname(os.path.abspath(__file__))
 model = current_path + '\\models\\'
-
 time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 timestamp = time.replace(':', '-').replace(' ', '_')
-
-# save model
 torch.save(agent.actor.state_dict(), model + f'actor_{timestamp}.pth')
 
-
-
+# plot the reward
 plt.plot(REWARD_BUFFER)
 plt.xlabel('Episode')
 plt.ylabel('Reward')
 plt.title('DDPG Reward')
 plt.show()
-
 
 env.close()
 

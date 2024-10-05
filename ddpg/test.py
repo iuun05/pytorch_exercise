@@ -15,7 +15,7 @@ ACTION_DIM = env.action_space.shape[0]
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 model = current_path + '\\models\\'
-actor_path = model + 'actor_2024-07-09_23-30-36.pth'
+actor_path = model + 'actor_2024-07-10_11-32-47.pth'
 
 def process_frame(frame):
     frame = np.transpose(frame, axes= (1, 0, 2))
